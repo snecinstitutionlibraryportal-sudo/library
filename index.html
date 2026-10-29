@@ -6,6 +6,8 @@
     <title>സ്മാർട്ട് ലൈബ്രറി പോർട്ടൽ</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-50 font-sans">
 
@@ -15,15 +17,132 @@
         <!-- സെർച്ച് ബോക്സ് -->
         <div class="bg-white p-4 rounded-xl shadow-md mb-6">
             <input type="text" id="searchInput" placeholder="പുസ്തകത്തിന്റെ പേരിലോ സബ്‌ടൈറ്റിലിലോ തിരയുക..." 
-                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onkeyup="searchBooks()">
         </div>
 
-        <!-- പുസ്തകം ചേർക്കാനുള്ള ഫോം -->
+        <!-- പുതിയ പുസ്തകം ചേർക്കാനുള്ള ഫോം -->
         <div class="bg-white p-6 rounded-xl shadow-md mb-6">
-            ഹെഡിംഗുകൾ നൽകി പുതിയ പുസ്തകം ചേർക്കുക
-            <!-- ഇവിടേക്ക് Supabase-മായി ബന്ധിപ്പിക്കുന്ന കോഡ് ചേർക്കാം -->
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">പുതിയ പുസ്തകം ചേർക്കുക</h2>
+            <form id="bookForm" onsubmit="addBook(event)" class="space-y-4">
+                <div>
+                    പ്രധാന തലക്കെട്ട് (Main Title):
+                    <input type="text" id="mainTitle" required class="w-full px-3 py-2 border rounded-lg mt-1">
+                </div>
+                <div>
+                    സബ്‌ടൈറ്റിലുകൾ / ടാഗുകൾ (Sub-titles):
+                    <input type="text" id="subTitles" placeholder="ഉദാഹരണത്തിന്: History, Kerala, Culture" class="w-full px-3 py-2 border rounded-lg mt-1">
+                </div>
+                <div>
+                    എഴുത്തുകാരൻ (Author):
+                    <input type="text" id="author" required class="w-full px-3 py-2 border rounded-lg mt-1">
+                </div>
+                <button type="submit" class="bg-blue-900 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition">പുസ്തകം സേവ് ചെയ്യുക</button>
+            </form>
+        </div>
+
+        <!-- പുസ്തകങ്ങളുടെ ലിസ്റ്റ് കാണുന്ന ഭാഗം -->
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">ലഭ്യമായ പുസ്തകങ്ങൾ</h2>
+            <div id="bookList" class="space-y-3">
+                <!-- ഡാറ്റ ഇവിടെ ലോഡ് ആകും -->
+            </div>
         </div>
     </div>
 
+    <script>
+        // Supabase ക്രമീകരണങ്ങൾ
+        const SUPABASE_URL = 'https://luaextjlruhoyogpfmjp.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_F8Mc3XmM5wXMO1p9qcmpxw_UWfAGDB5';
+        
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // പുസ്തകം ചേർക്കാനുള്ള ഫങ്ഷൻ
+        async function addBook(event) {
+            event.preventDefault();
+            const title = document.getElementById('mainTitle').value;
+            const subTitles = document.getElementById('subTitles').value;
+            const author = document.getElementById('author').value;
+
+            // ശ്രദ്ധിക്കുക: Supabase ടേബിളിലെ കോളത്തിന്റെ പേര് 'title' ആണോ അതോ 'main_title' ആണോ എന്ന് പരിശോധിക്കുക
+            const { data, error } = await _supabase
+                .from('books')
+                .insert([{ title: title, sub_titles: subTitles, author: author }]);
+
+            if (error) {
+                alert('പുസ്തകം ചേർക്കുന്നതിൽ തടസ്സം നേരിട്ടു: ' + error.message);
+            } else {
+                alert('പുസ്തകം വിജയകരമായി ചേർത്തു!');
+                document.getElementById('bookForm').reset();
+                loadBooks();
+            }
+        }
+
+        // പുസ്തകങ്ങൾ ലോഡ് ചെയ്യാനുള്ള ഫങ്ഷൻ
+        async function loadBooks() {
+            const { data, error } = await _supabase.from('books').select('*').order('created_at', { ascending: false });
+            const bookList = document.getElementById('bookList');
+            bookList.innerHTML = '';
+
+            if (error) {
+                bookList.innerHTML = '<p class="text-red-500">ഡാറ്റ ലോഡ് ചെയ്യുന്നതിൽ പിശക് സംഭവിച്ചു.</p>';
+                return;
+            }
+
+            if (data.length === 0) {
+                bookList.innerHTML = '<p class="text-gray-500">പുസ്തകങ്ങളൊന്നും ലഭ്യമല്ല.</p>';
+                return;
+            }
+
+            data.forEach(book => {
+                bookList.innerHTML += `
+                    <div class="p-3 border rounded-lg bg-gray-50 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-lg text-blue-900">${book.title}</h3>
+                            <p class="text-sm text-gray-600">സബ്‌ടൈറ്റിലുകൾ: ${book.sub_titles || 'പ്രത്യേകമില്ല'}</p>
+                            <p class="text-sm text-gray-600">എഴുത്തുകാരൻ: ${book.author}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // സെർച്ച് ചെയ്യാനുള്ള ഫങ്ഷൻ (Main Title അല്ലെങ്കിൽ Sub-titles)
+        async function searchBooks() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) {
+                loadBooks();
+                return;
+            }
+
+            const { data, error } = await _supabase
+                .from('books')
+                .select('*')
+                .or(`title.ilike.%${query}%,sub_titles.ilike.%${query}%`);
+
+            const bookList = document.getElementById('bookList');
+            bookList.innerHTML = '';
+
+            if (error || data.length === 0) {
+                bookList.innerHTML = '<p class="text-gray-500">ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല.</p>';
+                return;
+            }
+
+            data.forEach(book => {
+                bookList.innerHTML += `
+                    <div class="p-3 border rounded-lg bg-gray-50 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-lg text-blue-900">${book.title}</h3>
+                            <p class="text-sm text-gray-600">സബ്‌ടൈറ്റിലുകൾ: ${book.sub_titles || 'പ്രത്യേകമില്ല'}</p>
+                            <p class="text-sm text-gray-600">എഴുത്തുകാരൻ: ${book.author}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // പേജ് ലോഡ് ചെയ്യുമ്പോൾ പുസ്തകങ്ങൾ കാണിക്കുക
+        loadBooks();
+    </script>
 </body>
 </html>
