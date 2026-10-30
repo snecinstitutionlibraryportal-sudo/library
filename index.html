@@ -9,44 +9,66 @@
     <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="bg-gray-100 font-sans">
 
-    <div class="max-w-6xl mx-auto p-6">
+    <div class="max-w-5xl mx-auto p-6">
         <h1 class="text-3xl font-bold text-blue-900 mb-6 text-center">സ്മാർട്ട് ലൈബ്രറി മാനേജ്മെന്റ് സിസ്റ്റം</h1>
 
-        <!-- പ്രധാന നാവിഗേഷൻ ടാബുകൾ (Admin & Members Common) -->
-        <div class="flex flex-wrap justify-center gap-2 mb-8 border-b pb-4">
-            <button onclick="switchMainTab('searchTab')" id="btnSearch" class="px-5 py-2.5 bg-blue-900 text-white rounded-lg font-semibold shadow">പുസ്തകങ്ങൾ തിരയുക</button>
-            <button onclick="switchMainTab('adminTab')" id="btnAdmin" class="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg font-semibold shadow">അഡ്മിൻ പോർട്ടൽ (Admin)</button>
-            <button onclick="switchMainTab('memberTab')" id="btnMember" class="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg font-semibold shadow">അംഗങ്ങളുടെ പോർട്ടൽ (Member Login)</button>
-        </div>
+        <!-- 1. പ്രധാന ലോഗിൻ പേജ് (First View) -->
+        <div id="mainLoginSection" class="bg-white p-8 rounded-xl shadow-md max-w-md mx-auto mt-10">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">ലോഗിൻ ചെയ്യുക</h2>
+            
+            <!-- ടാബ് സ്വിച്ച് (അഡ്മിൻ / അംഗം) -->
+            <div class="flex mb-6 bg-gray-100 p-1 rounded-lg">
+                <button onclick="switchLoginType('admin')" id="loginTabAdmin" class="flex-1 py-2 rounded-lg font-semibold bg-blue-900 text-white text-sm transition">അഡ്മിൻ</button>
+                <button onclick="switchLoginType('member')" id="loginTabMember" class="flex-1 py-2 rounded-lg font-semibold text-gray-700 text-sm transition">അംഗം (Member)</button>
+            </div>
 
-        <!-- 1. പുസ്തകങ്ങൾ തിരയുന്ന ടാബ് (എല്ലാവർക്കും കാണാം) -->
-        <div id="searchTab" class="space-y-6">
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">ലൈബ്രറിയിലെ പുസ്തകങ്ങൾ തിരയുക</h2>
-                <input type="text" id="searchInput" placeholder="പുസ്തകത്തിന്റെ പേര്, സബ്‌ടൈറ്റിൽ അല്ലെങ്കിൽ എഴുത്തുകാരൻ വഴി തിരയുക..." 
-                    class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4" onkeyup="searchBooks()">
-                <div id="searchBookList" class="space-y-3"></div>
+            <!-- അഡ്മിൻ ലോഗിൻ ഫോം -->
+            <div id="adminLoginForm" class="space-y-4">
+                <div>
+                    യൂസർനെയിം (Username):
+                    <input type="text" id="adminUser" placeholder="admin എന്ന് നൽകുക" class="w-full px-3 py-2 border rounded-lg mt-1 focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    പാസ്‌വേർഡ് (Password):
+                    <input type="password" id="adminPass" placeholder="admin123 എന്ന് നൽകുക" class="w-full px-3 py-2 border rounded-lg mt-1 focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button onclick="loginAdmin()" class="w-full bg-blue-900 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-800 transition">അഡ്മിൻ ലോഗിൻ</button>
+                <p id="adminLoginError" class="text-sm text-center text-red-600 mt-2"></p>
+            </div>
+
+            <!-- അംഗങ്ങളുടെ ലോഗിൻ ഫോം -->
+            <div id="memberLoginForm" class="space-y-4 hidden">
+                <div>
+                    ഇമെയിൽ അല്ലെങ്കിൽ ഫോൺ നമ്പർ:
+                    <input type="text" id="memberLoginInput" placeholder="ഇമെയിൽ നൽകുക" class="w-full px-3 py-2 border rounded-lg mt-1 focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    പാസ്‌വേർഡ്:
+                    <input type="password" id="memberLoginPass" placeholder="പാസ്‌വേർഡ് നൽകുക" class="w-full px-3 py-2 border rounded-lg mt-1 focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button onclick="loginMember()" class="w-full bg-green-700 text-white py-2.5 rounded-lg font-semibold hover:bg-green-600 transition">അംഗം ലോഗിൻ</button>
+                <p id="memberLoginError" class="text-sm text-center text-red-600 mt-2"></p>
             </div>
         </div>
 
-        <!-- 2. അഡ്മിൻ പോർട്ടൽ (Admin Section: Books, Members Add, Issue/Return) -->
-        <div id="adminTab" class="space-y-6 hidden">
-            <div class="bg-blue-50 p-4 rounded-xl border border-blue-200 mb-4">
-                <h2 class="text-xl font-bold text-blue-900">അഡ്മിൻ കൺട്രോൾ പാനൽ</h2>
-                <p class="text-sm text-gray-600">പുതിയ പുസ്തകങ്ങളും അംഗങ്ങളെയും ചേർക്കാനും പുസ്തകങ്ങൾ വിതരണം ചെയ്യാനും ഇവിടെ ഉപയോഗിക്കുക.</p>
+        <!-- 2. അഡ്മിൻ ഡാഷ്‌ബോർഡ് (Admin Dashboard - Hidden by Default) -->
+        <div id="adminDashboard" class="space-y-6 hidden">
+            <div class="bg-blue-900 text-white p-4 rounded-xl flex justify-between items-center">
+                <h2 class="text-xl font-bold">അഡ്മിൻ കൺട്രോൾ പാനൽ</h2>
+                <button onclick="logout()" class="bg-red-600 px-4 py-2 rounded-lg text-sm font-semibold">ലോഗൗട്ട്</button>
             </div>
 
-            <!-- അഡ്മിൻ സബ് ടാബുകൾ -->
+            <!-- അഡ്മിൻ ടാബുകൾ -->
             <div class="flex space-x-2 border-b pb-2">
-                <button onclick="switchAdminSub('addSub')" id="subBtnAdd" class="px-4 py-2 bg-blue-800 text-white rounded-lg text-sm font-semibold">പുസ്തകം ചേർക്കുക</button>
-                <button onclick="switchAdminSub('addMem')" id="subBtnMem" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold">അംഗത്തെ ചേർക്കുക</button>
-                <button onclick="switchAdminSub('issueRet')" id="subBtnTrans" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold">പുസ്തകം ഇഷ്യൂ ചെയ്യുക</button>
+                <button onclick="switchAdminTab(' addBookSection')" id="tabBtn1" class="px-4 py-2 bg-blue-800 text-white rounded-lg text-sm font-semibold">പുസ്തകം ചേർക്കുക</button>
+                <button onclick="switchAdminTab('addMemberSection')" id="tabBtn2" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold">അംഗത്തെ ചേർക്കുക</button>
+                <button onclick="switchAdminTab('issueSection')" id="tabBtn3" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold">പുസ്തകം ഇഷ്യൂ ചെയ്യുക</button>
             </div>
 
-            <!-- അഡ്മിൻ സബ് 1: പുസ്തകം ചേർക്കൽ -->
-            <div id="adminSubAdd" class="bg-white p-6 rounded-xl shadow-md space-y-4">
+            <!-- പുസ്തകം ചേർക്കൽ -->
+            <div id="addBookSection" class="bg-white p-6 rounded-xl shadow-md space-y-4">
                 <h3 class="text-lg font-semibold text-gray-800">പുതിയ പുസ്തകം ചേർക്കുക</h3>
                 <form id="bookForm" onsubmit="addBook(event)" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -60,8 +82,8 @@
                 </form>
             </div>
 
-            <!-- അഡ്മിൻ സബ് 2: അംഗത്തെ ചേർക്കൽ -->
-            <div id="adminSubMem" class="bg-white p-6 rounded-xl shadow-md space-y-4 hidden">
+            <!-- അംഗത്തെ ചേർക്കൽ -->
+            <div id="addMemberSection" class="bg-white p-6 rounded-xl shadow-md space-y-4 hidden">
                 <h3 class="text-lg font-semibold text-gray-800">പുതിയ അംഗത്തെ ചേർക്കുക</h3>
                 <form id="memberForm" onsubmit="addMember(event)" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -74,8 +96,8 @@
                 </form>
             </div>
 
-            <!-- അഡ്മിൻ സബ് 3: പുസ്തകം ഇഷ്യൂ ചെയ്യൽ -->
-            <div id="adminSubTrans" class="bg-white p-6 rounded-xl shadow-md space-y-4 hidden">
+            <!-- പുസ്തകം ഇഷ്യൂ ചെയ്യൽ -->
+            <div id="issueSection" class="bg-white p-6 rounded-xl shadow-md space-y-4 hidden">
                 <h3 class="text-lg font-semibold text-gray-800">പുസ്തകം ഇഷ്യൂ ചെയ്യുക</h3>
                 <form id="transForm" onsubmit="issueBook(event)" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -91,35 +113,28 @@
             </div>
         </div>
 
-        <!-- 3. അംഗങ്ങളുടെ പോർട്ടൽ (Member Section: Login & Dashboard) -->
-        <div id="memberTab" class="space-y-6 hidden">
-            <!-- ലോഗിൻ ഫോം -->
-            <div id="memberLoginBox" class="bg-white p-6 rounded-xl shadow-md max-w-md mx-auto">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">അംഗങ്ങൾ ലോഗിൻ ചെയ്യുക</h2>
-                <div class="space-y-4">
-                    <div>ഇമെയിൽ വിലാസം:<input type="email" id="loginEmail" required class="w-full px-3 py-2 border rounded-lg mt-1"></div>
-                    <div>പാസ്‌വേർഡ്:<input type="password" id="loginPassword" required class="w-full px-3 py-2 border rounded-lg mt-1"></div>
-                    <button onclick="memberLogin()" class="w-full bg-blue-900 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-800">ലോഗിൻ ചെയ്യുക</button>
-                    <p id="loginResult" class="text-sm text-center mt-2"></p>
+        <!-- 3. അംഗത്തിന്റെ ഡാഷ്‌ബോർഡ് (Member Dashboard - Hidden by Default) -->
+        <div id="memberDashboard" class="space-y-6 hidden">
+            <div class="bg-green-800 text-white p-4 rounded-xl flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold" id="welcomeMemberName">സ്വാഗതം</h2>
+                    <p class="text-xs text-green-200" id="welcomeMemberEmail"></p>
                 </div>
+                <button onclick="logout()" class="bg-red-600 px-4 py-2 rounded-lg text-sm font-semibold">ലോഗൗട്ട്</button>
             </div>
 
-            <!-- അംഗത്തിന്റെ ഡാഷ്‌ബോർഡ് (ലോഗിൻ ചെയ്തു കഴിഞ്ഞാൽ കാണുന്നത്) -->
-            <div id="memberDashboardBox" class="space-y-6 hidden">
-                <div class="bg-blue-900 text-white p-6 rounded-xl shadow-md flex justify-between items-center">
-                    <div>
-                        <h2 class="text-2xl font-bold" id="memberNameDisplay">സ്വാഗതം</h2>
-                        <p class="text-sm text-blue-200" id="memberEmailDisplay"></p>
-                    </div>
-                    <button onclick="memberLogout()" class="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-semibold">ലോഗൗട്ട്</button>
-                </div>
+            <!-- പുസ്തകം തിരയുന്ന ഭാഗം -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">ലൈബ്രറിയിലെ പുസ്തകങ്ങൾ തിരയുക</h3>
+                <input type="text" id="searchInput" placeholder="പുസ്തകത്തിന്റെ പേര്, സബ്‌ടൈറ്റിൽ അല്ലെങ്കിൽ എഴുത്തുകാരൻ വഴി തിരയുക..." 
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 mb-4" onkeyup="searchBooks()">
+                <div id="searchBookList" class="space-y-2 max-h-60 overflow-y-auto"></div>
+            </div>
 
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-3">നിങ്ങൾ എടുത്ത പുസ്തകങ്ങളുടെ വിവരങ്ങൾ</h3>
-                    <div id="myIssuedBooksList" class="space-y-3">
-                        <p class="text-gray-500">വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു...</p>
-                    </div>
-                </div>
+            <!-- എടുത്ത പുസ്തകങ്ങളുടെ വിവരങ്ങൾ -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">നിങ്ങൾ എടുത്ത പുസ്തകങ്ങളുടെ വിവരങ്ങൾ</h3>
+                <div id="myIssuedBooksList" class="space-y-3"></div>
             </div>
         </div>
 
@@ -132,57 +147,96 @@
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let currentMember = null;
+        let loggedInUserType = null; // 'admin' or 'member'
+        let currentMemberData = null;
 
-        // പ്രധാന ടാബ് മാറ്റാൻ
-        function switchMainTab(tabId) {
-            ['searchTab', 'adminTab', 'memberTab'].forEach(t => document.getElementById(t).classList.add('hidden'));
-            ['btnSearch', 'btnAdmin', 'btnMember'].forEach(b => document.getElementById(b).className = 'px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg font-semibold shadow');
-
-            document.getElementById(tabId).classList.remove('hidden');
-            let btnMap = { 'searchTab': 'btnSearch', 'adminTab': 'btnAdmin', 'memberTab': 'btnMember' };
-            document.getElementById(btnMap[tabId]).className = 'px-5 py-2.5 bg-blue-900 text-white rounded-lg font-semibold shadow';
-
-            if(tabId === 'searchTab') loadBooksForSearch();
+        // ലോഗിൻ ടാബ് മാറ്റാൻ (അഡ്മിൻ / അംഗം)
+        function switchLoginType(type) {
+            if (type === 'admin') {
+                document.getElementById('adminLoginForm').classList.remove('hidden');
+                document.getElementById('memberLoginForm').classList.add('hidden');
+                document.getElementById('loginTabAdmin').className = 'flex-1 py-2 rounded-lg font-semibold bg-blue-900 text-white text-sm transition';
+                document.getElementById('loginTabMember').className = 'flex-1 py-2 rounded-lg font-semibold text-gray-700 text-sm transition';
+            } else {
+                document.getElementById('adminLoginForm').classList.add('hidden');
+                document.getElementById('memberLoginForm').classList.remove('hidden');
+                document.getElementById('loginTabMember').className = 'flex-1 py-2 rounded-lg font-semibold bg-green-700 text-white text-sm transition';
+                document.getElementById('loginTabAdmin').className = 'flex-1 py-2 rounded-lg font-semibold text-gray-700 text-sm transition';
+            }
         }
 
-        // അഡ്മിൻ സബ് ടാബ് മാറ്റാൻ
-        function switchAdminSub(subId) {
-            ['adminSubAdd', 'adminSubMem', 'adminSubTrans'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            ['subBtnAdd', 'subBtnMem', 'subBtnTrans'].forEach(b => document.getElementById(b).className = 'px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold');
+        // അഡ്മിൻ ലോഗിൻ
+        function loginAdmin() {
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+            const err = document.getElementById('adminLoginError');
 
-            document.getElementById(subId).classList.remove('hidden');
-            let subBtnMap = { 'adminSubAdd': 'subBtnAdd', 'adminSubMem': 'subBtnMem', 'adminSubTrans': 'subBtnTrans' };
-            document.getElementById(subBtnMap[subId]).className = 'px-4 py-2 bg-blue-800 text-white rounded-lg text-sm font-semibold';
-
-            if(subId === 'adminSubTrans') { loadDropdowns(); loadTransactions(); }
+            if (user === 'admin' && pass === 'admin123') {
+                loggedInUserType = 'admin';
+                document.getElementById('mainLoginSection').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                loadDropdowns();
+                loadTransactions();
+            } else {
+                err.innerText = 'തെറ്റായ യൂസർനെയിം അല്ലെങ്കിൽ പാസ്‌വേർഡ്!';
+            }
         }
 
-        // 1. പുസ്തകം തിരയൽ
-        async function loadBooksForSearch() {
-            const { data } = await _supabase.from('books').select('*').order('created_at', { ascending: false });
-            displaySearchResults(data || []);
+        // അംഗങ്ങളുടെ ലോഗിൻ
+        async function loginMember() {
+            const input = document.getElementById('memberLoginInput').value;
+            const pass = document.getElementById('memberLoginPass').value;
+            const err = document.getElementById('memberLoginError');
+
+            if (!input || !pass) {
+                err.innerText = 'എല്ലാ വിവരങ്ങളും നൽകുക!';
+                return;
+            }
+
+            const { data, error } = await _supabase.from('members').select('*').eq('email', input).eq('password', pass).single();
+
+            if (error || !data) {
+                err.innerText = 'തെറ്റായ ഇമെയിൽ അല്ലെങ്കിൽ പാസ്‌വേർഡ്!';
+            } else {
+                loggedInUserType = 'member';
+                currentMemberData = data;
+                document.getElementById('mainLoginSection').classList.add('hidden');
+                document.getElementById('memberDashboard').classList.remove('hidden');
+                
+                document.getElementById('welcomeMemberName').innerText = `സ്വാഗതം, ${data.name}!`;
+                document.getElementById('welcomeMemberEmail').innerText = `ഇമെയിൽ: ${data.email} | ഫോൺ: ${data.phone}`;
+
+                loadMyIssuedBooks();
+                loadBooksForSearch();
+            }
         }
 
-        async function searchBooks() {
-            const query = document.getElementById('searchInput').value;
-            if (!query) { loadBooksForSearch(); return; }
-            const { data } = await _supabase.from('books').select('*').or(`title.ilike.%${query}%,sub_titles.ilike.%${query}%,author.ilike.%${query}%`);
-            displaySearchResults(data || []);
+        // ലോഗൗട്ട്
+        function logout() {
+            loggedInUserType = null;
+            currentMemberData = null;
+            document.getElementById('adminDashboard').classList.add('hidden');
+            document.getElementById('memberDashboard').classList.add('hidden');
+            document.getElementById('mainLoginSection').classList.remove('hidden');
+            document.getElementById('adminUser').value = '';
+            document.getElementById('adminPass').value = '';
+            document.getElementById('memberLoginInput').value = '';
+            document.getElementById('memberLoginPass').value = '';
         }
 
-        function displaySearchResults(books) {
-            const list = document.getElementById('searchBookList');
-            list.innerHTML = books.length === 0 ? '<p class="text-gray-500">ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല.</p>' : '';
-            books.forEach(book => {
-                list.innerHTML += `<div class="p-3 border rounded-lg bg-gray-50">
-                    <h4 class="font-bold text-lg text-blue-900">${book.title}</h4>
-                    <p class="text-sm text-gray-600">സബ്‌ടൈറ്റിൽ: ${book.sub_titles || 'പ്രത്യേകമില്ല'} | എഴുത്തുകാരൻ: ${book.author} | വർഷം: ${book.publication_year || '-'}</p>
-                </div>`;
-            });
+        // അഡ്മിൻ ടാബുകൾ മാറ്റാൻ
+        function switchAdminTab(sectionId) {
+            ['addBookSection', 'addMemberSection', 'issueSection'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            ['tabBtn1', 'tabBtn2', 'tabBtn3'].forEach(b => document.getElementById(b).className = 'px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold');
+
+            document.getElementById(sectionId.trim()).classList.remove('hidden');
+            let map = { 'addBookSection': 'tabBtn1', 'addMemberSection': 'tabBtn2', 'issueSection': 'tabBtn3' };
+            document.getElementById(map[sectionId.trim()]).className = 'px-4 py-2 bg-blue-800 text-white rounded-lg text-sm font-semibold';
+            
+            if(sectionId.trim() === 'issueSection') { loadDropdowns(); loadTransactions(); }
         }
 
-        // 2. അഡ്മിൻ ആക്ഷൻസ് (Add Book, Member, Issue)
+        // അഡ്മിൻ ആക്ഷൻസ്
         async function addBook(event) {
             event.preventDefault();
             const title = document.getElementById('mainTitle').value;
@@ -243,36 +297,32 @@
             });
         }
 
-        // 3. അംഗങ്ങൾ ലോഗിൻ & ഡാഷ്‌ബോർഡ്
-        async function memberLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const res = document.getElementById('loginResult');
-
-            const { data, error } = await _supabase.from('members').select('*').eq('email', email).eq('password', password).single();
-            if (error || !data) {
-                res.innerHTML = '<span class="text-red-600">തെറ്റായ ഇമെയിൽ അല്ലെങ്കിൽ പാസ്‌വേർഡ്!</span>';
-            } else {
-                currentMember = data;
-                document.getElementById('memberLoginBox').classList.add('hidden');
-                document.getElementById('memberDashboardBox').classList.remove('hidden');
-                document.getElementById('memberNameDisplay').innerText = `സ്വാഗതം, ${data.name}!`;
-                document.getElementById('memberEmailDisplay').innerText = `ഇമെയിൽ: ${data.email} | ഫോൺ: ${data.phone}`;
-                loadMyIssuedBooks();
-            }
+        // അംഗങ്ങളുടെ ഫീച്ചറുകൾ
+        async function loadBooksForSearch() {
+            const { data } = await _supabase.from('books').select('*').order('created_at', { ascending: false });
+            displaySearchResults(data || []);
         }
 
-        function memberLogout() {
-            currentMember = null;
-            document.getElementById('loginPassword').value = '';
-            document.getElementById('loginResult').innerHTML = '';
-            document.getElementById('memberDashboardBox').classList.add('hidden');
-            document.getElementById('memberLoginBox').classList.remove('hidden');
+        async function searchBooks() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) { loadBooksForSearch(); return; }
+            const { data } = await _supabase.from('books').select('*').or(`title.ilike.%${query}%,sub_titles.ilike.%${query}%,author.ilike.%${query}%`);
+            displaySearchResults(data || []);
+        }
+
+        function displaySearchResults(books) {
+            const list = document.getElementById('searchBookList');
+            list.innerHTML = books.length === 0 ? '<p class="text-gray-500">പുസ്തകങ്ങളൊന്നും കണ്ടെത്തിയില്ല.</p>' : '';
+            books.forEach(book => {
+                list.innerHTML += `<div class="p-2 border rounded bg-gray-50 text-sm">
+                    <b>${book.title}</b> (${book.author}) - <span class="text-gray-600">${book.sub_titles || 'ടാഗുകൾ ഇല്ല'}</span>
+                </div>`;
+            });
         }
 
         async function loadMyIssuedBooks() {
-            if (!currentMember) return;
-            const { data } = await _supabase.from('transactions').select(`id, issue_date, due_date, status, books(title, author)`).eq('member_id', currentMember.id);
+            if (!currentMemberData) return;
+            const { data } = await _supabase.from('transactions').select(`id, issue_date, due_date, status, books(title, author)`).eq('member_id', currentMemberData.id);
             const list = document.getElementById('myIssuedBooksList');
             if (!data || data.length === 0) {
                 list.innerHTML = '<p class="text-gray-500">നിങ്ങൾ ഇതുവരെ പുസ്തകങ്ങളൊന്നും എടുത്തിട്ടില്ല.</p>';
@@ -280,18 +330,15 @@
             }
             list.innerHTML = '';
             data.forEach(t => {
-                list.innerHTML += `<div class="p-3 border rounded-lg bg-gray-50 flex justify-between items-center">
+                list.innerHTML += `<div class="p-3 border rounded-lg bg-gray-50 flex justify-between items-center text-sm">
                     <div>
-                        <h4 class="font-bold text-blue-900">${t.books?.title}</h4>
+                        <b>${t.books?.title}</b> (എഴുത്തുകാരൻ: ${t.books?.author})
                         <p class="text-xs text-gray-500">ഇഷ്യൂ ചെയ്തത്: ${t.issue_date} | തിരികെ നൽകേണ്ടത്: ${t.due_date}</p>
                     </div>
-                    <span class="px-3 py-1 text-xs rounded bg-yellow-100 text-yellow-800 font-semibold">${t.status}</span>
+                    <span class="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800 font-semibold">${t.status}</span>
                 </div>`;
             });
         }
-
-        // തുടക്കത്തിൽ സെർച്ച് ടാബ് ലോഡ് ചെയ്യുക
-        switchMainTab('searchTab');
     </script>
 </body>
 </html>
