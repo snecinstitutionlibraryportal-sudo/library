@@ -11,37 +11,44 @@
 </head>
 <body class="bg-gray-50 font-sans">
 
-    <div class="max-w-5xl mx-auto p-6">
-        <h1 class="text-3xl font-bold text-blue-900 mb-6 text-center">സ്മാർട്ട് ലൈബ്രറി മാനേജ്മെന്റ്</h1>
+    <div class="max-w-6xl mx-auto p-6">
+        <h1 class="text-3xl font-bold text-blue-900 mb-6 text-center">സ്മാർട്ട് ലൈബ്രറി മാനേജ്മെന്റ് സിസ്റ്റം</h1>
 
-        <!-- നാവിഗേഷൻ ടാബുകൾ -->
-        <div class="flex justify-center space-x-4 mb-6">
-            <button onclick="switchTab('books')" id="btnBooks" class="px-6 py-2 bg-blue-900 text-white rounded-lg font-semibold shadow">പുസ്തകങ്ങൾ</button>
-            <button onclick="switchTab('members')" id="btnMembers" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold shadow">അംഗങ്ങൾ (Members)</button>
-            <button onclick="switchTab('transactions')" id="btnTransactions" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold shadow">പുസ്തക വിതരണം (Issue/Return)</button>
+        <!-- പ്രധാന നാവിഗേഷൻ ടാബുകൾ -->
+        <div class="flex flex-wrap justify-center gap-2 mb-8 border-b pb-4">
+            <button onclick="switchTab('searchTab')" id="btnSearch" class="px-5 py-2.5 bg-blue-900 text-white rounded-lg font-semibold shadow">പുസ്തകങ്ങൾ തിരയുക</button>
+            <button onclick="switchTab('booksTab')" id="btnBooks" class="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg font-semibold shadow">പുസ്തകം ചേർക്കുക</button>
+            <button onclick="switchTab('membersTab')" id="btnMembers" class="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg font-semibold shadow">അംഗങ്ങൾ & ലോഗിൻ</button>
+            <button onclick="switchTab('transTab')" id="btnTrans" class="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg font-semibold shadow">പുസ്തക വിതരണം (Issue/Return)</button>
+            <button onclick="switchTab('reportsTab')" id="btnReports" class="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg font-semibold shadow">റിപ്പോർട്ടുകൾ & അനലിറ്റിക്സ്</button>
         </div>
 
-        <!-- 1. പുസ്തകങ്ങളുടെ സെക്ഷൻ -->
-        <div id="sectionBooks" class="space-y-6">
-            <div class="bg-white p-4 rounded-xl shadow-md">
-                <input type="text" id="searchInput" placeholder="പുസ്തകത്തിന്റെ പേരിലോ സബ്‌ടൈറ്റിലിലോ തിരയുക..." 
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onkeyup="searchBooks()">
+        <!-- 1. പുസ്തകങ്ങൾ തിരയുന്ന ടാബ് -->
+        <div id="searchTab" class="space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">സ്മാർട്ട് ബുക്ക് സെർച്ച്</h2>
+                <input type="text" id="searchInput" placeholder="പുസ്തകത്തിന്റെ പേര്, സബ്‌ടൈറ്റിൽ അല്ലെങ്കിൽ എഴുത്തുകാരൻ വഴി തിരയുക..." 
+                    class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4" onkeyup="searchBooks()">
+                <div id="searchBookList" class="space-y-3"></div>
             </div>
+        </div>
 
+        <!-- 2. പുസ്തകം ചേർക്കുന്ന ടാബ് -->
+        <div id="booksTab" class="space-y-6 hidden">
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">പുതിയ പുസ്തകം ചേർക്കുക</h2>
                 <form id="bookForm" onsubmit="addBook(event)" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            പ്രധാന തലക്കെട്ട് (Main Title):
+                            പ്രധാന തലക്കെട്ട് (Main Title)*:
                             <input type="text" id="mainTitle" required class="w-full px-3 py-2 border rounded-lg mt-1">
                         </div>
                         <div>
                             സബ്‌ടൈറ്റിലുകൾ / ടാഗുകൾ:
-                            <input type="text" id="subTitles" placeholder="ഉദാ: History, Kerala" class="w-full px-3 py-2 border rounded-lg mt-1">
+                            <input type="text" id="subTitles" placeholder="ഉദാ: History, Kerala, Fiqh" class="w-full px-3 py-2 border rounded-lg mt-1">
                         </div>
                         <div>
-                            എഴുത്തുകാരൻ (Author):
+                            എഴുത്തുകാരൻ (Author)*:
                             <input type="text" id="author" required class="w-full px-3 py-2 border rounded-lg mt-1">
                         </div>
                         <div>
@@ -56,46 +63,75 @@
                     <button type="submit" class="bg-blue-900 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition">പുസ്തകം സേവ് ചെയ്യുക</button>
                 </form>
             </div>
-
             <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">ലഭ്യമായ പുസ്തകങ്ങൾ</h2>
-                <div id="bookList" class="space-y-3"></div>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">ലൈബ്രറിയിലുള്ള എല്ലാ പുസ്തകങ്ങളും</h2>
+                <div id="allBookList" class="space-y-3"></div>
             </div>
         </div>
 
-        <!-- 2. അംഗങ്ങളുടെ (Members) സെക്ഷൻ -->
-        <div id="sectionMembers" class="space-y-6 hidden">
+        <!-- 3. അംഗങ്ങളും ലോഗിനും ടാബ് -->
+        <div id="membersTab" class="space-y-6 hidden">
             <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">പുതിയ അംഗത്തെ ചേർക്കുക</h2>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">പുതിയ അംഗത്തെ രജിസ്റ്റർ ചെയ്യുക</h2>
                 <form id="memberForm" onsubmit="addMember(event)" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            അംഗത്തിന്റെ പേര് (Name):
+                            പേര്*:
                             <input type="text" id="memberName" required class="w-full px-3 py-2 border rounded-lg mt-1">
                         </div>
                         <div>
-                            ഇമെയിൽ (Email):
-                            <input type="email" id="memberEmail" class="w-full px-3 py-2 border rounded-lg mt-1">
+                            ഇമെയിൽ (ലോഗിൻ ഐഡിയായി ഉപയോഗിക്കാം)*:
+                            <input type="email" id="memberEmail" required class="w-full px-3 py-2 border rounded-lg mt-1">
                         </div>
                         <div>
-                            ഫോൺ നമ്പർ (Phone):
+                            ഫോൺ നമ്പർ*:
                             <input type="text" id="memberPhone" required class="w-full px-3 py-2 border rounded-lg mt-1">
                         </div>
+                        <div>
+                            പാസ്‌വേർഡ്*:
+                            <input type="password" id="memberPassword" required class="w-full px-3 py-2 border rounded-lg mt-1">
+                        </div>
                     </div>
-                    <button type="submit" class="bg-blue-900 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition">അംഗത്തെ ചേർക്കുക</button>
+                    <button type="submit" class="bg-blue-900 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition">അംഗത്തെ രജിസ്റ്റർ ചെയ്യുക</button>
                 </form>
             </div>
 
             <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">അംഗങ്ങളുടെ പട്ടിക</h2>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">അംഗങ്ങളുടെ ലോഗിൻ & പാസ്‌വേർഡ് റിക്കവറി (OTP)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- ലോഗിൻ ബോക്സ് -->
+                    <div class="p-4 border rounded-lg bg-gray-50">
+                        <h3 class="font-bold text-lg text-blue-900 mb-2">അംഗം ലോഗിൻ ചെയ്യുക</h3>
+                        <input type="email" id="loginEmail" placeholder="ഇമെയിൽ നൽകുക" class="w-full px-3 py-2 border rounded-lg mb-2">
+                        <input type="password" id="loginPassword" placeholder="പാസ്‌വേർഡ് നൽകുക" class="w-full px-3 py-2 border rounded-lg mb-2">
+                        <button onclick="memberLogin()" class="w-full bg-green-700 text-white py-2 rounded-lg">ലോഗിൻ</button>
+                        <p id="loginResult" class="text-sm mt-2"></p>
+                    </div>
+                    <!-- പാസ്‌വേർഡ് റിക്കവറി ബോക്സ് -->
+                    <div class="p-4 border rounded-lg bg-gray-50">
+                        <h3 class="font-bold text-lg text-blue-900 mb-2">പാസ്‌വേർഡ് മറന്നുപോയോ? (OTP വഴി മാറ്റാം)</h3>
+                        <input type="email" id="recoveryEmail" placeholder="നിങ്ങളുടെ രജിസ്റ്റർ ചെയ്ത ഇമെയിൽ" class="w-full px-3 py-2 border rounded-lg mb-2">
+                        <button onclick="sendOTP()" class="w-full bg-amber-600 text-white py-2 rounded-lg mb-2">ഒടിപി (OTP) അയക്കുക</button>
+                        <div id="otpSection" class="hidden">
+                            <input type="text" id="enteredOTP" placeholder="ലഭിച്ച ഒടിപി നൽകുക" class="w-full px-3 py-2 border rounded-lg mb-2">
+                            <input type="password" id="newPassword" placeholder="പുതിയ പാസ്‌വേർഡ് നൽകുക" class="w-full px-3 py-2 border rounded-lg mb-2">
+                            <button onclick="resetPassword()" class="w-full bg-blue-800 text-white py-2 rounded-lg">പാസ്‌വേർഡ് അപ്ഡേറ്റ് ചെയ്യുക</button>
+                        </div>
+                        <p id="recoveryResult" class="text-sm mt-2"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">രജിസ്റ്റർ ചെയ്ത അംഗങ്ങളുടെ പട്ടിക</h2>
                 <div id="memberList" class="space-y-3"></div>
             </div>
         </div>
 
-        <!-- 3. പുസ്തക വിതരണ (Transactions) സെക്ഷൻ -->
-        <div id="sectionTransactions" class="space-y-6 hidden">
+        <!-- 4. പുസ്തക വിതരണ ടാബ് -->
+        <div id="transTab" class="space-y-6 hidden">
             <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">പുസ്തകം നൽകുക (Issue Book)</h2>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">പുസ്തകം ഇഷ്യൂ ചെയ്യുക (Issue Book)</h2>
                 <form id="transForm" onsubmit="issueBook(event)" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -112,8 +148,16 @@
             </div>
 
             <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">വിതരണ ചരിത്രം (Transactions History)</h2>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">വിതരണ ചരിത്രവും നിലവിലെ സ്റ്റാറ്റസും</h2>
                 <div id="transList" class="space-y-3"></div>
+            </div>
+        </div>
+
+        <!-- 5. റിപ്പോർട്ടുകൾ & അനലിറ്റിക്സ് ടാബ് -->
+        <div id="reportsTab" class="space-y-6 hidden">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">ഏറ്റവും കൂടുതൽ ആവശ്യക്കാരുള്ള / എടുത്ത പുസ്തകങ്ങൾ</h2>
+                <div id="popularBooksList" class="space-y-3"></div>
             </div>
         </div>
 
@@ -126,42 +170,40 @@
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ടാബ് മാറ്റാനുള്ള ഫങ്ഷൻ
-        function switchTab(tab) {
-            document.getElementById('sectionBooks').classList.add('hidden');
-            document.getElementById('sectionMembers').classList.add('hidden');
-            document.getElementById('sectionTransactions').classList.add('hidden');
+        // ടാബുകൾ മാറ്റി കാണിക്കാനുള്ള ഫങ്ഷൻ
+        function switchTab(tabId) {
+            const tabs = ['searchTab', 'booksTab', 'membersTab', 'transTab', 'reportsTab'];
+            const btns = ['btnSearch', 'btnBooks', 'btnMembers', 'btnTrans', 'btnReports'];
 
-            document.getElementById('btnBooks').className = 'px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold shadow';
-            document.getElementById('btnMembers').className = 'px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold shadow';
-            document.getElementById('btnTransactions').className = 'px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold shadow';
+            tabs.forEach(t => document.getElementById(t).classList.add('hidden'));
+            btns.forEach(b => {
+                let el = document.getElementById(b);
+                el.className = 'px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg font-semibold shadow';
+            });
 
-            if (tab === 'books') {
-                document.getElementById('sectionBooks').classList.remove('hidden');
-                document.getElementById('btnBooks').className = 'px-6 py-2 bg-blue-900 text-white rounded-lg font-semibold shadow';
-                loadBooks();
-            } else if (tab === 'members') {
-                document.getElementById('sectionMembers').classList.remove('hidden');
-                document.getElementById('btnMembers').className = 'px-6 py-2 bg-blue-900 text-white rounded-lg font-semibold shadow';
-                loadMembers();
-            } else if (tab === 'transactions') {
-                document.getElementById('sectionTransactions').classList.remove('hidden');
-                document.getElementById('btnTransactions').className = 'px-6 py-2 bg-blue-900 text-white rounded-lg font-semibold shadow';
-                loadDropdowns();
-                loadTransactions();
-            }
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            let activeBtnMap = { 'searchTab': 'btnSearch', 'booksTab': 'btnBooks', 'membersTab': 'btnMembers', 'transTab': 'btnTrans', 'reportsTab': 'btnReports' };
+            document.getElementById(activeBtnMap[tabId]).className = 'px-5 py-2.5 bg-blue-900 text-white rounded-lg font-semibold shadow';
+
+            // ഡാറ്റ ലോഡ് ചെയ്യുക
+            if(tabId === 'searchTab') loadBooksForSearch();
+            if(tabId === 'booksTab') loadBooks();
+            if(tabId === 'membersTab') loadMembers();
+            if(tabId === 'transTab') { loadDropdowns(); loadTransactions(); }
+            if(tabId === 'reportsTab') loadPopularBooks();
         }
 
         // 1. പുസ്തകം ചേർക്കൽ
         async function addBook(event) {
             event.preventDefault();
             const title = document.getElementById('mainTitle').value;
-            const subTitles = document.getElementById('subTitles').value;
+            const sub_titles = document.getElementById('subTitles').value;
             const author = document.getElementById('author').value;
             const publisher = document.getElementById('publisher').value;
-            const pubYear = document.getElementById('pubYear').value ? parseInt(document.getElementById('pubYear').value) : null;
+            const publication_year = document.getElementById('pubYear').value ? parseInt(document.getElementById('pubYear').value) : null;
 
-            const { error } = await _supabase.from('books').insert([{ title, sub_titles: subTitles, author, publisher, publication_year: pubYear }]);
+            const { error } = await _supabase.from('books').insert([{ title, sub_titles, author, publisher, publication_year }]);
             if (error) {
                 alert('തടസ്സം നേരിട്ടു: ' + error.message);
             } else {
@@ -173,46 +215,54 @@
 
         async function loadBooks() {
             const { data, error } = await _supabase.from('books').select('*').order('created_at', { ascending: false });
-            const bookList = document.getElementById('bookList');
-            bookList.innerHTML = error || data.length === 0 ? '<p class="text-gray-500">പുസ്തകങ്ങളൊന്നും ലഭ്യമല്ല.</p>' : '';
-            if (!error) {
-                data.forEach(book => {
-                    bookList.innerHTML += `<div class="p-3 border rounded-lg bg-gray-50">
-                        <h3 class="font-bold text-lg text-blue-900">${book.title}</h3>
-                        <p class="text-sm text-gray-600">സബ്‌ടൈറ്റിൽ: ${book.sub_titles || 'പ്രത്യേകമില്ല'}</p>
-                        <p class="text-sm text-gray-600">എഴുത്തുകാരൻ: ${book.author} | പ്രസാധകർ: ${book.publisher || '-'} | വർഷം: ${book.publication_year || '-'}</p>
-                    </div>`;
-                });
-            }
-        }
-
-        async function searchBooks() {
-            const query = document.getElementById('searchInput').value;
-            if (!query) { loadBooks(); return; }
-            const { data } = await _supabase.from('books').select('*').or(`title.ilike.%${query}%,sub_titles.ilike.%${query}%`);
-            const bookList = document.getElementById('bookList');
-            bookList.innerHTML = !data || data.length === 0 ? '<p class="text-gray-500">ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല.</p>' : '';
+            const list = document.getElementById('allBookList');
+            list.innerHTML = error || data.length === 0 ? '<p class="text-gray-500">പുസ്തകങ്ങളൊന്നും ലഭ്യമല്ല.</p>' : '';
             data?.forEach(book => {
-                bookList.innerHTML += `<div class="p-3 border rounded-lg bg-gray-50">
+                list.innerHTML += `<div class="p-3 border rounded-lg bg-gray-50">
                     <h3 class="font-bold text-lg text-blue-900">${book.title}</h3>
-                    <p class="text-sm text-gray-600">സബ്‌ടൈറ്റിൽ: ${book.sub_titles || 'പ്രത്യേകമില്ല'}</p>
-                    <p class="text-sm text-gray-600">എഴുത്തുകാരൻ: ${book.author}</p>
+                    <p class="text-sm text-gray-600">സബ്‌ടൈറ്റിലുകൾ: ${book.sub_titles || 'പ്രത്യേകമില്ല'}</p>
+                    <p class="text-sm text-gray-600">എഴുത്തുകാരൻ: ${book.author} | പ്രസാധകർ: ${book.publisher || '-'} | വർഷം: ${book.publication_year || '-'}</p>
                 </div>`;
             });
         }
 
-        // 2. അംഗങ്ങളെ ചേർക്കൽ
+        async function loadBooksForSearch() {
+            const { data } = await _supabase.from('books').select('*').order('created_at', { ascending: false });
+            displaySearchResults(data || []);
+        }
+
+        async function searchBooks() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) { loadBooksForSearch(); return; }
+            const { data } = await _supabase.from('books').select('*').or(`title.ilike.%${query}%,sub_titles.ilike.%${query}%,author.ilike.%${query}%`);
+            displaySearchResults(data || []);
+        }
+
+        function displaySearchResults(books) {
+            const list = document.getElementById('searchBookList');
+            list.innerHTML = books.length === 0 ? '<p class="text-gray-500">ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല.</p>' : '';
+            books.forEach(book => {
+                list.innerHTML += `<div class="p-4 border rounded-lg bg-gray-50">
+                    <h3 class="font-bold text-lg text-blue-900">${book.title}</h3>
+                    <p class="text-sm text-gray-600">സബ്‌ടൈറ്റിൽ: ${book.sub_titles || 'പ്രത്യേകമില്ല'}</p>
+                    <p class="text-sm text-gray-600">എഴുത്തുകാരൻ: ${book.author} | പ്രസാധകർ: ${book.publisher || '-'} | വർഷം: ${book.publication_year || '-'}</p>
+                </div>`;
+            });
+        }
+
+        // 2. അംഗങ്ങളെ ചേർക്കലും ലോഗിനും
         async function addMember(event) {
             event.preventDefault();
             const name = document.getElementById('memberName').value;
             const email = document.getElementById('memberEmail').value;
             const phone = document.getElementById('memberPhone').value;
+            const password = document.getElementById('memberPassword').value;
 
-            const { error } = await _supabase.from('members').insert([{ name, email, phone }]);
+            const { error } = await _supabase.from('members').insert([{ name, email, phone, password }]);
             if (error) {
                 alert('തടസ്സം നേരിട്ടു: ' + error.message);
             } else {
-                alert('അംഗത്തെ വിജയകരമായി ചേർത്തു!');
+                alert('അംഗത്തെ വിജയകരമായി രജിസ്റ്റർ ചെയ്തു!');
                 document.getElementById('memberForm').reset();
                 loadMembers();
             }
@@ -220,15 +270,52 @@
 
         async function loadMembers() {
             const { data, error } = await _supabase.from('members').select('*').order('created_at', { ascending: false });
-            const memberList = document.getElementById('memberList');
-            memberList.innerHTML = error || data.length === 0 ? '<p class="text-gray-500">അംഗങ്ങളാരും ലഭ്യമല്ല.</p>' : '';
-            if (!error) {
-                data.forEach(m => {
-                    memberList.innerHTML += `<div class="p-3 border rounded-lg bg-gray-50">
-                        <h3 class="font-bold text-lg text-blue-900">${m.name}</h3>
-                        <p class="text-sm text-gray-600">ഫോൺ: ${m.phone} | ഇമെയിൽ: ${m.email || '-'}</p>
-                    </div>`;
-                });
+            const list = document.getElementById('memberList');
+            list.innerHTML = error || data.length === 0 ? '<p class="text-gray-500">അംഗങ്ങളാരും ലഭ്യമല്ല.</p>' : '';
+            data?.forEach(m => {
+                list.innerHTML += `<div class="p-3 border rounded-lg bg-gray-50">
+                    <h3 class="font-bold text-lg text-blue-900">${m.name}</h3>
+                    <p class="text-sm text-gray-600">ഇമെയിൽ: ${m.email} | ഫോൺ: ${m.phone}</p>
+                </div>`;
+            });
+        }
+
+        async function memberLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const { data, error } = await _supabase.from('members').select('*').eq('email', email).eq('password', password).single();
+            const res = document.getElementById('loginResult');
+            if (error || !data) {
+                res.innerHTML = '<span class="text-red-600 font-semibold">ഇമെയിലും പാസ്‌വേർഡും തെറ്റാണ്!</span>';
+            } else {
+                res.innerHTML = `<span class="text-green-700 font-semibold">സ്വാഗതം, ${data.name}! ലോഗിൻ വിജയിച്ചു.</span>`;
+            }
+        }
+
+        let generatedOTP = null;
+        function sendOTP() {
+            const email = document.getElementById('recoveryEmail').value;
+            if(!email) { alert('ഇമെയിൽ നൽകുക'); return; }
+            generatedOTP = Math.floor(1000 + Math.random() * 9000);
+            alert(`സിമുലേറ്റഡ് ഒടിപി (OTP): ${generatedOTP} (ഈ കോഡ് ഉപയോഗിച്ച് പാസ്‌വേർഡ് മാറ്റാം)`);
+            document.getElementById('otpSection').classList.remove('hidden');
+        }
+
+        async function resetPassword() {
+            const otp = document.getElementById('enteredOTP').value;
+            const newPass = document.getElementById('newPassword').value;
+            const email = document.getElementById('recoveryEmail').value;
+            const res = document.getElementById('recoveryResult');
+
+            if(parseInt(otp) === generatedOTP) {
+                const { error } = await _supabase.from('members').update({ password: newPass }).eq('email', email);
+                if(error) {
+                    res.innerHTML = '<span class="text-red-600">മാറ്റം വരുത്തുന്നതിൽ പിശക്.</span>';
+                } else {
+                    res.innerHTML = '<span class="text-green-700 font-semibold">പാസ്‌വേർഡ് വിജയകരമായി മാറ്റിയിരിക്കുന്നു!</span>';
+                }
+            } else {
+                res.innerHTML = '<span class="text-red-600">നൽകിയ ഒടിപി തെറ്റാണ്.</span>';
             }
         }
 
@@ -241,14 +328,10 @@
             const memberSelect = document.getElementById('selectMember');
 
             bookSelect.innerHTML = '<option value="">പുസ്തകം തിരഞ്ഞെടുക്കുക</option>';
-            booksRes.data?.forEach(b => {
-                bookSelect.innerHTML += `<option value="${b.id}">${b.title}</option>`;
-            });
+            booksRes.data?.forEach(b => { bookSelect.innerHTML += `<option value="${b.id}">${b.title}</option>`; });
 
             memberSelect.innerHTML = '<option value="">അംഗത്തെ തിരഞ്ഞെടുക്കുക</option>';
-            membersRes.data?.forEach(m => {
-                memberSelect.innerHTML += `<option value="${m.id}">${m.name}</option>`;
-            });
+            membersRes.data?.forEach(m => { memberSelect.innerHTML += `<option value="${m.id}">${m.name}</option>`; });
         }
 
         async function issueBook(event) {
@@ -256,46 +339,62 @@
             const book_id = document.getElementById('selectBook').value;
             const member_id = document.getElementById('selectMember').value;
             const due_date = new Date();
-            due_date.setDate(due_date.getDate() + 14); // 14 ദിവസത്തേക്ക് ഇഷ്യൂ ചെയ്യുന്നു
+            due_date.setDate(due_date.getDate() + 14);
 
             const { error } = await _supabase.from('transactions').insert([{
-                book_id,
-                member_id,
-                due_date: due_date.toISOString().split('T')[0],
-                status: 'Issued'
+                book_id, member_id, due_date: due_date.toISOString().split('T')[0], status: 'Issued'
             }]);
 
-            if (error) {
-                alert('തടസ്സം നേരിട്ടു: ' + error.message);
-            } else {
-                alert('പുസ്തകം വിജയകരമായി ഇഷ്യൂ ചെയ്തു!');
-                loadTransactions();
-            }
+            if (error) { alert('തടസ്സം നേരിട്ടു: ' + error.message); }
+            else { alert('പുസ്തകം വിജയകരമായി ഇഷ്യൂ ചെയ്തു!'); loadTransactions(); }
         }
 
         async function loadTransactions() {
-            const { data, error } = await _supabase
-                .from('transactions')
-                .select(`id, issue_date, due_date, status, books(title), members(name)`)
-                .order('created_at', { ascending: false });
-
-            const transList = document.getElementById('transList');
-            transList.innerHTML = error || data.length === 0 ? '<p class="text-gray-500">വിതരണ വിവരങ്ങളൊന്നും ലഭ്യമല്ല.</p>' : '';
-            if (!error) {
-                data.forEach(t => {
-                    transList.innerHTML += `<div class="p-3 border rounded-lg bg-gray-50 flex justify-between items-center">
-                        <div>
-                            <h3 class="font-bold text-blue-900">പുസ്തകം: ${t.books?.title || 'Unknown'}</h3>
-                            <p class="text-sm text-gray-600">എടുത്തയാൾ: ${t.members?.name || 'Unknown'}</p>
-                            <p class="text-xs text-gray-500">ഇഷ്യൂ ചെയ്ത തീയതി: ${t.issue_date} | തിരികെ നൽകേണ്ട തീയതി: ${t.due_date}</p>
-                        </div>
-                        <span class="px-3 py-1 text-xs rounded bg-yellow-100 text-yellow-800 font-semibold">${t.status}</span>
-                    </div>`;
-                });
-            }
+            const { data, error } = await _supabase.from('transactions').select(`id, issue_date, due_date, status, books(title), members(name)`).order('created_at', { ascending: false });
+            const list = document.getElementById('transList');
+            list.innerHTML = error || data.length === 0 ? '<p class="text-gray-500">വിതരണ വിവരങ്ങളൊന്നും ലഭ്യമല്ല.</p>' : '';
+            data?.forEach(t => {
+                list.innerHTML += `<div class="p-3 border rounded-lg bg-gray-50 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-blue-900">പുസ്തകം: ${t.books?.title || 'Unknown'}</h3>
+                        <p class="text-sm text-gray-600">എടുത്തയാൾ: ${t.members?.name || 'Unknown'}</p>
+                        <p class="text-xs text-gray-500">ഇഷ്യൂ ചെയ്ത തീയതി: ${t.issue_date} | തിരികെ നൽകേണ്ട തീയതി: ${t.due_date}</p>
+                    </div>
+                    <span class="px-3 py-1 text-xs rounded bg-yellow-100 text-yellow-800 font-semibold">${t.status}</span>
+                </div>`;
+            });
         }
 
-        loadBooks();
+        // 4. റിപ്പോർട്ടുകൾ (Popular Books)
+        async function loadPopularBooks() {
+            const { data, error } = await _supabase.from('transactions').select('book_id, books(title, author)');
+            const list = document.getElementById('popularBooksList');
+            if (error || !data || data.length === 0) {
+                list.innerHTML = '<p class="text-gray-500">വിവരങ്ങൾ ലഭ്യമല്ല.</p>';
+                return;
+            }
+
+            // ഏറ്റവും കൂടുതൽ എടുത്ത പുസ്തകങ്ങൾ കണക്കാക്കുന്നു
+            let counts = {};
+            data.forEach(t => {
+                if(t.books) {
+                    let title = t.books.title;
+                    counts[title] = (counts[title] || 0) + 1;
+                }
+            });
+
+            let sortedBooks = Object.entries(counts).sort((a,b) => b[1] - a[1]);
+            list.innerHTML = '';
+            sortedBooks.forEach(([title, count]) => {
+                list.innerHTML += `<div class="p-3 border rounded-lg bg-gray-50 flex justify-between items-center">
+                    <span class="font-bold text-blue-900">${title}</span>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">${count} തവണ എടുത്തു</span>
+                </div>`;
+            });
+        }
+
+        // തുടക്കത്തിൽ സെർച്ച് ടാബ് ലോഡ് ചെയ്യുക
+        switchTab('searchTab');
     </script>
 </body>
 </html>
